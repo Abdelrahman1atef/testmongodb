@@ -20,6 +20,7 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login")
 
 def hash_password(password: str) -> str:
     """Hash a password with automatic salt generation"""
+    password = password[:72]  # Ensure password is str type
     return pwd_context.hash(password)
 
 
