@@ -11,7 +11,7 @@ from fastapi.security import OAuth2PasswordBearer
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 # JWT Configuration
-SECRET_KEY = os.getenv("SECRET_KEY")  # Change this!
+SECRET_KEY = os.getenv("SECRET_KEY")
 ALGORITHM = os.getenv("ALGORITHM", "HS256")
 ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", 30))
 
@@ -38,18 +38,15 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -
         expire = datetime.now(timezone.utc) + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     
     to_encode.update({"exp": expire})
-    if not SECRET_KEY:
-        raise RuntimeError("SECRET_KEY environment variable is not set")
-    encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+   
+    encoded_jwt = jwt.encode(to_encode, os.getenv("SECRET_KEY","NONE"), algorithm=ALGORITHM)
     return encoded_jwt
 
 
 def decode_access_token(token: str) -> dict:
     """Decode and verify a JWT token"""
     try:
-        if not SECRET_KEY:
-            raise RuntimeError("SECRET_KEY environment variable is not set")
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        payload = jwt.decode(token,  os.getenv("SECRET_KEY","NONE"), algorithms=[ALGORITHM])
         return payload
     except JWTError:
         raise HTTPException(

@@ -99,7 +99,6 @@ async def get_current_user(token: str = Depends(oauth2_scheme)) -> User:
     """Dependency to get current authenticated user"""
     payload = decode_access_token(token)
     email = payload.get("sub")
-    
     if email is None:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
